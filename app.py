@@ -40,6 +40,9 @@ def login_customer():
        user = cursor.fetchone()
        
        if user:
+           update_query = "UPDATE participant SET last_login = NOW() WHERE email = %s"
+           cursor.execute(update_query, (username,))
+           connection.commit()
            flash(f"Welcome {user['full_name']}")
            return redirect(url_for('home'))
        else:
