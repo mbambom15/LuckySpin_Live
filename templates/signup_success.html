@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup Successful</title>
+    <script>
+        setTimeout(function(){
+            window.location.href = "{{ url_for('login') }}";
+        }, 2000); // redirect after 2 seconds
+    </script>
+</head>
+<body>
+    <h2>Welcome {{ full_name }}! Your account has been created.</h2>
+    <p>Redirecting to login page...</p>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-Up</title>
+</head>
+<header>
+    <section>
+        <nav>
+            <ul>
+                <li>LuckySpin</li>
+            </ul>
+        </nav>
+        <h4>Sign-Up page</h4>
+    </section>
+</header>
+
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul style="color:red;">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+
+    <h1>Sign Up to LuckySpin</h1>
+    <form action="{{ url_for('signup_customer') }}" method="post">
+        <label>Name: </label>
+        <input type="text" name="name" required="">
+
+        <label>Surname: </label>
+        <input type="text" name="surname" required="">
+
+        <label>South African ID: </label>
+        <input type="text" name="sa_id" required="">
+
+        <label>Mobile Number: </label>
+        <input type="tel" name="mobile_num" required="">
+
+        <label>Email: </label>
+        <input type="email" name="email" required="">
+
+        <label>Password: </label>
+        <input type="password" name="pswd1" required="">
+
+        <label>Re-type Password: </label>
+        <input type="password" name="pswd2" required="">
+
+        <input type="submit" value="Sign-Up" />
+    </form>
+</body>
+<script>
+
+</script>
+
+</html>

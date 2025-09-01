@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<header>
+    <section>
+        <nav>
+            <ul>
+                <li>LuckySpin</li>
+                <li><a href=""><button>Forgot Password: </button></a></li>
+            </ul>
+        </nav>
+        <h4>Login</h4>
+    </section>
+</header>
+
+<body>
+
+    <h1>Welcome to LuckySpin: </h1>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="flash-message">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    
+    <form action="/login_customer" method="POST">
+        <label>Email: </label>
+        <input type="email" name="email" required="">
+
+        <label>Password: </label>
+        <input type="password" name="pswd1" required="">
+
+        <input type="submit" value="Login" />
+    </form>
+
+    <p>No account? Sign up below.</p>
+
+    <form action="/signup_customer" method="POST">
+
+    </form>
+</body>
+
+</html>
