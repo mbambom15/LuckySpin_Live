@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
 import mysql.connector
+import re
 
 
 connection = mysql.connector.connect(
@@ -12,6 +13,17 @@ connection = mysql.connector.connect(
 cursor = connection.cursor()
 app = Flask(__name__)
 app.secret_key = "SoliderBoyRules"
+def luhn_check(id_number):
+    """Perform Luhn check on SA ID"""
+    digits = [int(d) for d in id_number]
+    odd_sum = sum(digits[-1::-2])
+    even_digits = digits[-2::-2]
+    even_sum = 0
+    for d in even_digits:
+        d *= 2
+        even_sum += d // 10 + d % 10
+    total = odd_sum + even_sum
+    return total % 10 == 0
 
 @app.route('/')
 def home():
@@ -60,7 +72,9 @@ def signup():
 @app.route('/signup_success')
 def signup_success():
     return render_template("signup_success.html")
+
 #participant signup
+#only one email can signup
 @app.route('/signup_customer', methods = ['POST'])
 def signup_customer():
     msg = ''
@@ -79,10 +93,15 @@ def signup_customer():
         msg = "Fill in all fields!!"
         flash(msg)
         return redirect(url_for('signup'))
-    
+#
     if password1 != password2:
         flash("Passwords do not match")
         return redirect(url_for('signup'))
+    
+    if not luhn_check(sa_id):
+        flash("Invalid South African ID number")
+        return redirect(url_for('signup'))
+#check if email is pre-existing
     
     query = """INSERT INTO participant
                 (sa_id, full_name, email, p_password, balance, mobile_number, created_at, last_login)
@@ -90,6 +109,38 @@ def signup_customer():
     values = (sa_id, fullname, username, password2, 2000.00, mobile)
     
     try:
+        cursor.execute("SELECT * FROM participant WHERE email=%s", (username,))
+        existing_user = cursor.fetchone()
+        if existing_user:
+            flash("Email is already signed up")
+            return redirect(url_for('signup'))
+        
+        cursor.execute("SELECT * FROM participant WHERE sa_id=%s", (sa_id,))
+        existing_sa_id = cursor.fetchone()
+        if existing_sa_id:
+            flash("South African ID already exists here")
+            return redirect(url_for('signup'))
+#check password
+        if len(password2) < 8 or len(password2) > 12:
+            msg = "Password length must be between 8 - 12 characters"
+            flash(msg)
+            return redirect(url_for('signup'))
+        
+        if not re.search(r'[A-Z]', password2) or not re.search(r'[a-z]', password2):
+            msg = "Password must contain both uppercase and lowercase letters"
+            flash(msg)
+            return redirect(url_for('signup'))
+        
+        if not re.search(r'\d', password2):
+            msg = "Password must contain at least one number"
+            flash(msg)
+            return redirect(url_for('signup'))
+        
+        if not re.search(r'[!@#$%^&*()_+\-=\[\]{};:\'"\\|,.<>\/?]', password2):
+            msg = "Password must contain at least one special character"
+            flash(msg)
+            return redirect(url_for('signup'))
+        
         cursor.execute(query, values)
         connection.commit()
         return render_template("signup_success.html", full_name=fullname)
