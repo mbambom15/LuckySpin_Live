@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, session
 import mysql.connector
 import re
 
@@ -24,6 +24,7 @@ def luhn_check(id_number):
         even_sum += d // 10 + d % 10
     total = odd_sum + even_sum
     return total % 10 == 0
+
 
 @app.route('/')
 def home():
@@ -55,8 +56,14 @@ def login_customer():
            update_query = "UPDATE participant SET last_login = NOW() WHERE email = %s"
            cursor.execute(update_query, (username,))
            connection.commit()
+           #store dynamic values
+           session['user_id'] = user['id']
+           session['full_name'] = user['full_name']
+           session['balance'] = float(user['balance'])
+           
            flash(f"Welcome {user['full_name']}")
-           return redirect(url_for('home'))
+           return redirect(url_for('menu'))
+       
        else:
            flash("Invalid email or password!")
            return redirect(url_for('login'))
@@ -64,6 +71,15 @@ def login_customer():
         print(f"Database error: {err}")
         flash("Something went wrong, please try again later.")
         return redirect(url_for('login'))
+#game logic now
+@app.route('/menu')
+def menu():
+    if 'user_id' not in session:
+        flash("Please login first")
+        return redirect(url_for('login'))
+    
+    return render_template("menu.html", full_name=session['full_name'],balance =session['balance'])
+   
 
 @app.route('/signup')
 def signup():
