@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player History</title>
+</head>
+
+<body>
+    <h2>Your Game History</h2>
+    <table border="1">
+        <tr>
+            <th>Played At</th>
+            <th>Wager</th>
+            <th>Chosen Numbers</th>
+            <th>Draw Numbers</th>
+            <th>Matched</th>
+            <th>Winnings</th>
+            <th>Outcome</th>
+        </tr>
+        {% for game in history %}
+        <tr>
+            <td>{{ game.played_at }}</td>
+            <td>R{{ game.wager_amount }}</td>
+            <td>{{ game.chosen_numbers }}</td>
+            <td>{{ game.draw_numbers }}</td>
+            <td>{{ game.matched_numbers }}</td>
+            <td>R{{ game.winnings }}</td>
+            <td>{{ game.outcome }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+
+    <form action="{{ url_for('menu') }}" method="GET">
+        <input type="submit" class="menu-button" value="BACK TO MENU">
+    </form>
+</body>
+
+</html>

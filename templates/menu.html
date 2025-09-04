@@ -1,33 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lucky Spin - Menu</title>
+    
+       
 </head>
+
 <body>
     <header>
-        <div>
-            <nav>
-                <ul>
-                    <li>LuckySpin</li>
-                </ul>
-            </nav>
-        </div>
+        <nav>
+            <ul>
+                <li>🎰 LuckySpin</li>
+            </ul>
+        </nav>
     </header>
-    
-    <h1>Welcome, {{ full_name }}</h1>
-    <h2>Your Balance: R {{ balance }}</h2>
 
-    <h3>Options available for game</h3>
-    <ul>
-        <li><a href="/play">Play Game</a></li>
-        <li><a href="/history">History Game</a></li>
-        <li><a href="/topup">Top up</a></li>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash">
+        {% for msg in messages %}
+        <p>{{ msg }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <h1>Welcome, {{ full_name }}</h1>
+
+    {% if balance > 0 %}
+    <h2>Your Balance: R {{ "%.2f"|format(balance) }}</h2>
+    {% else %}
+    <h2>You have no balance. <a href="{{ url_for('topup') }}">Top up now!</a></h2>
+    {% endif %}
+
+    <h3>Options available for you</h3>
+    <ul class="options">
+        <li><a href="{{ url_for('play') }}">🎮 Play Game</a></li>
+        <li><a href="{{ url_for('history') }}">📜 Game History</a></li>
+        <li><a href="{{ url_for('topup') }}">💳 Top Up</a></li>
     </ul>
 
-    <form action="/logout" method="post">
-        <input type="submit" value="LOGOUT">
+    <form action="{{ url_for('logout') }}" method="GET">
+        <input type="submit" value="🚪 Logout">
     </form>
 </body>
+
 </html>

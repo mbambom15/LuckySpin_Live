@@ -1,23 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Play Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d0d0d;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 30px;
+        }
+
+        h1,
+        h2 {
+            color: #facc15;
+        }
+
+        form {
+            margin-top: 30px;
+            background-color: #1f1f1f;
+            padding: 20px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        input[type="submit"] {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background-color: #10b981;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #059669;
+        }
+
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .form-section {
+            margin-top: 20px;
+        }
+
+        .menu-button {
+            margin-top: 30px;
+            display: inline-block;
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .menu-button:hover {
+            background-color: #2563eb;
+        }
+    </style>
 </head>
+
 <body>
-    <form>
+    <h1>🎰 Welcome {{ full_name }}, your balance is R{{ "%.2f"|format(balance) }}</h1>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="error">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('play') }}" method="POST">
         <h2>Enter your 6 lucky numbers (between 1 and 49)</h2>
+
+
+
         <div>
             {% for i in range(1,7) %}
-                <input type="number" name="{{i}}" min="1" max="49" required=""/>
+            <input type="number" name="number{{ i }}" min="1" max="49" required />
             {% endfor %}
         </div>
 
         <div class="form-section">
             <label for="amount">Enter your bet (min R100): </label>
-            <input type="number" name="amount" min="100" max=""/>
+            <input type="number" name="amount" min="100" max="{{ balance }}" required />
         </div>
+
         <input type="submit" value="Play Now +_+">
     </form>
 
@@ -28,4 +121,5 @@
     </form>
 
 </body>
+
 </html>

@@ -1,15 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Result</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #1f1c2c, #928dab);
+            color: #f2f2f2;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .card {
+            background: #ffffff;
+            color: #333;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        h2 {
+            color: #6a1b9a;
+            margin-bottom: 20px;
+        }
+
+        .info {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .numbers {
+            font-weight: bold;
+            color: #0d47a1;
+        }
+
+        .success {
+            color: #2e7d32;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .fail {
+            color: #c62828;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 25px;
+            margin-right: 10px;
+            padding: 10px 20px;
+            background-color: #6a1b9a;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #4a148c;
+        }
+    </style>
 </head>
+
 <body>
     <div class="card">
         <h2>🎲 Game Outcome 🎲</h2>
 
+        {% if numbers and drawn %}
+        <div class="info">🎯 Correct Draw: <span class="numbers">{{ drawn | join(', ') }}</span></div>
+        <div class="info">🏁 Outcome: <strong>{{ outcome }}</strong></div>
+        <div class="info">🔢 Your Numbers: <span class="numbers">{{ numbers | join(', ') }}</span></div>
+
+        {% set match_count = namespace(value=0) %}
+        {% for num in numbers %}
+        {% if num in drawn %}
+        {% set match_count.value = match_count.value + 1 %}
+        {% endif %}
+        {% endfor %}
+
+        <div class="info">✅ Numbers Matched: <strong>{{ match_count.value }}</strong></div>
+
+        <div class="info">
+            <span class="{% if winnings > 0 %}success{% else %}fail{% endif %}">
+                {% if winnings > 0 %}
+                🎉 You won R{{ "%.2f"|format(winnings) }}
+                {% else %}
+                🙁 You didn't win this round
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="info">💰 Your new balance: R{{ "%.2f"|format(balance) }}</div>
+        {% else %}
+        <p class="fail">⚠️ Game data not available. Please try again.</p>
+        {% endif %}
+
+        <a href="{{ url_for('play') }}">🎮 Play Again</a>
+        <a href="{{ url_for('menu') }}">🏠 Back to Menu</a>
     </div>
-    
 </body>
+
 </html>

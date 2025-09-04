@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 import mysql.connector
 import re
+import random
 
 
 connection = mysql.connector.connect(
@@ -71,6 +72,7 @@ def login_customer():
         print(f"Database error: {err}")
         flash("Something went wrong, please try again later.")
         return redirect(url_for('login'))
+    
 #game logic now
 @app.route('/menu')
 def menu():
@@ -80,9 +82,149 @@ def menu():
     
     return render_template("menu.html", full_name=session['full_name'],balance =session['balance'])
 
-@app.route('/play')
+@app.route('/play', methods=['GET', 'POST'])
 def play():
-    return render_template('play.html')
+    if 'user_id' not in session:
+        flash("Please login first!")
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        try:
+            bet_amount = float(request.form.get("amount"))
+        except (ValueError, TypeError):
+            flash("Invalid bet amount entered.")
+            return render_template("play.html", 
+                                 full_name=session['full_name'], 
+                                 balance=session['balance'])
+        
+        if bet_amount < 100 or bet_amount > session['balance']:
+            flash("Bet must be between R100 and your balance")
+            return render_template("play.html",
+                                 full_name=session['full_name'],
+                                 balance=session['balance'])
+        
+        try:
+            user_numbers = set()
+            for i in range(1, 7):
+                num = request.form.get(f"number{i}")
+                if num is None or num == '':
+                    flash("Please fill all 6 number fields")
+                    return render_template("play.html",
+                                         full_name=session['full_name'],
+                                         balance=session['balance'])
+                user_numbers.add(int(num))
+        except (ValueError, TypeError):
+            flash("Enter valid numbers between 1 and 49")
+            return render_template("play.html",
+                                 full_name=session['full_name'],
+                                 balance=session['balance'])
+        
+        if len(user_numbers) != 6 or any(n < 1 or n > 49 for n in user_numbers):
+            flash("Enter 6 unique numbers between 1 and 49")
+            return render_template("play.html",
+                                 full_name=session['full_name'],
+                                 balance=session['balance'])
+        
+       
+        drawn_numbers = set(random.sample(range(1,50), 6))
+        match_count = len(user_numbers & drawn_numbers)
+        
+        outcome, winnings = "LOSS", 0
+        if match_count == 6:
+            outcome, winnings = "WIN", bet_amount * 100
+        elif match_count == 3:
+            outcome, winnings = "PARTIAL", bet_amount * 50
+        
+        new_balance = session['balance'] - bet_amount + winnings
+        session['balance'] = new_balance
+        
+        try:
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO LottoDraw (draw_date, total_pool) VALUES (NOW(), %s)", (bet_amount,))
+            draw_id = cursor.lastrowid
+            
+            for num in drawn_numbers:
+                cursor.execute("INSERT INTO LottoDraw_Numbers (draw_id, number) VALUES (%s, %s)", (draw_id, num))
+                
+            cursor.execute("""
+                INSERT INTO Game (played_at, wager_amount, matched_numbers, winnings,
+                                  player_id, outcome, draw_id)
+                VALUES (NOW(), %s, %s, %s, %s, %s, %s)
+            """, (bet_amount, match_count, winnings, session['user_id'], outcome, draw_id))
+            game_id = cursor.lastrowid
+
+            for num in user_numbers:
+                cursor.execute("INSERT INTO Game_ChosenNumbers (game_id, number) VALUES (%s, %s)", (game_id, num))
+
+            cursor.execute("UPDATE participant SET balance=%s WHERE id=%s", (new_balance, session['user_id']))
+            connection.commit()
+            
+        except mysql.connector.Error as err:
+            flash(f"Database error: {err}")
+            return render_template("play.html",
+                                 full_name=session['full_name'],
+                                 balance=session['balance'])
+
+        return render_template("game_result.html",
+                               numbers=list(user_numbers),
+                               drawn=list(drawn_numbers),
+                               outcome=outcome,
+                               winnings=winnings,
+                               balance=new_balance)
+                
+    return render_template("play.html", 
+                         full_name=session['full_name'], 
+                         balance=session['balance'])
+    
+#history. get the user from session!
+@app.route('/history', methods=['GET', 'POST'])
+def history():
+    
+    if 'user_id' not in session:
+        flash("Not logged in.")
+        return redirect(url_for('login'))
+    #get session id
+    user_id = session['user_id']
+    #query
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM PlayerGameHistory WHERE player_id = %s ORDER BY played_at DESC", (user_id, ))
+    history_data = cursor.fetchall()
+    cursor.close()
+    return render_template("history.html", history = history_data)
+
+#topup function here
+@app.route('/topup', methods=['GET', 'POST'])
+def topup():
+    if 'user_id' not in session:
+        flash("Log in")
+        return redirect(url_for('login'))
+    #get session id
+    user_id = session['user_id']
+    #
+    if request.method == 'POST':
+        try:
+            amount = float(request.form.get("amount", 0))
+        except ValueError:
+            flash("Enter a valid amount. ")
+            return render_template("topup.html")
+        
+        if amount < 100 or amount > 5000:
+            flash("Top-up must be between R100 and R5000")
+            return render_template("topup.html")
+        try:
+            cursor = connection.cursor()
+            cursor.execute("UPDATE participant SET balance = balance + %s WHERE id = %s", (amount, user_id))
+            connection.commit()
+            cursor.close()
+            session['balance'] = session['balance'] + amount
+
+            flash(f"Successfully topped up R{amount:.2f}. New balance: R{session['balance']:.2f}")
+            return redirect(url_for('menu'))
+        except mysql.connector.Error as err:
+            flash(f"Database error: {err}")
+            return render_template("topup.html")
+    return render_template("topup.html")
+
 
 @app.route('/signup')
 def signup():
@@ -167,6 +309,12 @@ def signup_customer():
     except mysql.connector.Error as err:
         flash(f"Database error: {err}")
         return redirect(url_for('signup'))
+    
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("You have been logged out. ")
+    return render_template('home.html')
     
 if __name__ == "__main__":
     app.run(debug=True)

@@ -19,7 +19,7 @@ CREATE TABLE LottoDraw (
     total_pool DECIMAL(12,2) DEFAULT 0.00
 );
 
--- LottoDraw numbers (ElementCollection)
+-- LottoDraw 
 CREATE TABLE LottoDraw_Numbers (
     draw_id BIGINT NOT NULL,
     number INT NOT NULL,
@@ -27,15 +27,13 @@ CREATE TABLE LottoDraw_Numbers (
     CONSTRAINT fk_draw_numbers FOREIGN KEY (draw_id) REFERENCES LottoDraw(id)
 );
 
--- Game table
+
 CREATE TABLE Game (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     played_at TIMESTAMP NOT NULL,
     wager_amount DECIMAL(9,2) NOT NULL,
     matched_numbers INT NOT NULL,
     winnings DECIMAL(9,2) DEFAULT 0.00,
-
-    -- foreign keys
     player_id INT NOT NULL,
     draw_id BIGINT NOT NULL,
 
@@ -45,10 +43,34 @@ CREATE TABLE Game (
     CONSTRAINT fk_game_draw FOREIGN KEY (draw_id) REFERENCES LottoDraw(id)
 );
 
--- Game chosen numbers (ElementCollection)
+
 CREATE TABLE Game_ChosenNumbers (
     game_id BIGINT NOT NULL,
     number INT NOT NULL,
     PRIMARY KEY (game_id, number),
     CONSTRAINT fk_game_numbers FOREIGN KEY (game_id) REFERENCES Game(id)
 );
+-- create view for history
+CREATE OR REPLACE VIEW PlayerGameHistory AS
+SELECT 
+    g.id AS game_id,
+    g.player_id,
+    p.full_name,
+    g.played_at,
+    g.wager_amount,
+    g.matched_numbers,
+    g.winnings,
+    g.outcome,
+    -- Combine player's chosen numbers
+    (SELECT GROUP_CONCAT(number ORDER BY number SEPARATOR ', ')
+     FROM Game_ChosenNumbers
+     WHERE game_id = g.id) AS chosen_numbers,
+    -- Combine draw numbers
+    (SELECT GROUP_CONCAT(number ORDER BY number SEPARATOR ', ')
+     FROM LottoDraw_Numbers
+     WHERE draw_id = g.draw_id) AS draw_numbers
+FROM Game g
+JOIN participant p ON g.player_id = p.id
+ORDER BY g.played_at DESC;
+
+

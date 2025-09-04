@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top-Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #1f1c2c, #928dab);
+            color: #fff;
+            text-align: center;
+            padding: 40px;
+        }
+
+        form {
+            background: #fff;
+            color: #333;
+            padding: 20px;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px;
+            width: 120px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #6a1b9a;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background: #4a148c;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>💰 Running Low?</h3>
+    <p>Top up your account and keep playing.<br> Every draw brings you one step closer to victory!</p>
+
+    <form action="{{ url_for('topup') }}" method="POST">
+        <label for="amount">Amount (R):</label>
+        <input type="number" name="amount" min="100" max="5000" required>
+        <br>
+        <input type="submit" value="TOP-UP">
+    </form>
+</body>
+
+</html>
