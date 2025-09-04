@@ -6,6 +6,26 @@
     <title>Play Game</title>
 </head>
 <body>
-    
+    <form>
+        <h2>Enter your 6 lucky numbers (between 1 and 49)</h2>
+        <div>
+            {% for i in range(1,7) %}
+                <input type="number" name="{{i}}" min="1" max="49" required=""/>
+            {% endfor %}
+        </div>
+
+        <div class="form-section">
+            <label for="amount">Enter your bet (min R100): </label>
+            <input type="number" name="amount" min="100" max=""/>
+        </div>
+        <input type="submit" value="Play Now +_+">
+    </form>
+
+    <br>
+
+    <form action="{{ url_for('menu') }}" method="GET">
+        <input type="submit" class="menu-button" value="BACK TO MENU">
+    </form>
+
 </body>
 </html>
