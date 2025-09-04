@@ -79,7 +79,10 @@ def menu():
         return redirect(url_for('login'))
     
     return render_template("menu.html", full_name=session['full_name'],balance =session['balance'])
-   
+
+@app.route('/play')
+def play():
+    return render_template('play.html')
 
 @app.route('/signup')
 def signup():
