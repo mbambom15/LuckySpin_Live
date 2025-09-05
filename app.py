@@ -310,6 +310,67 @@ def signup_customer():
         flash(f"Database error: {err}")
         return redirect(url_for('signup'))
     
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    msg = ''
+    
+    if request.method == 'POST':
+        email = request.form.get('email')
+        pswd1 = request.form.get('pswd1')
+        pswd2 = request.form.get('pswd2')
+
+        # Check required fields
+        if not all([email, pswd1, pswd2]):
+            flash("Fill in all fields!!")
+            return redirect(url_for('forgot_password'))
+
+        # Confirm match
+        if pswd1 != pswd2:
+            flash("Passwords do not match")
+            return redirect(url_for('forgot_password'))
+
+        # Length check
+        if len(pswd2) < 8 or len(pswd2) > 12:
+            flash("Password length must be between 8 - 12 characters")
+            return redirect(url_for('forgot_password'))
+
+        # Must contain uppercase + lowercase
+        if not re.search(r'[A-Z]', pswd2) or not re.search(r'[a-z]', pswd2):
+            flash("Password must contain both uppercase and lowercase letters")
+            return redirect(url_for('forgot_password'))
+
+        # Must contain a digit
+        if not re.search(r'\d', pswd2):
+            flash("Password must contain at least one number")
+            return redirect(url_for('forgot_password'))
+
+        # Must contain a special character
+        if not re.search(r'[!@#$%^&*()_+\-=\[\]{};:\'"\\|,.<>\/?]', pswd2):
+            flash("Password must contain at least one special character")
+            return redirect(url_for('forgot_password'))
+
+        # Check if email exists
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM participant WHERE email=%s", (email,))
+        account = cursor.fetchone()
+
+        if not account:
+            flash("No account with this email")
+            cursor.close()
+            return redirect(url_for('forgot_password'))
+
+        # Update password
+        cursor.execute("UPDATE participant SET p_password=%s WHERE email=%s", (pswd2, email))
+        connection.commit()
+        cursor.close()
+
+        flash("Password reset successfully! You can now log in.")
+        return redirect(url_for('login'))
+
+    # GET request
+    return render_template("forgot_password.html")
+
+    
 @app.route('/logout')
 def logout():
     session.clear()
