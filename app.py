@@ -2,18 +2,19 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 import mysql.connector
 import re
 import random
+import os
 
 
 connection = mysql.connector.connect(
-    host = 'luckyspin-1.czg4wmsiihb0.eu-west-3.rds.amazonaws.com',
-    database = 'luckyspin',
-    username = 'bambi15',
-    password = 'Bambi7708#a'
+    host=os.getenv('DB_HOST'),
+    database=os.getenv('DB_NAME'),
+    username=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD')
 )
 #
 cursor = connection.cursor()
 app = Flask(__name__)
-app.secret_key = "SoliderBoyRules"
+app.secret_key = os.getenv('SECRET_KEY')
 def luhn_check(id_number):
     """Perform Luhn check on SA ID"""
     digits = [int(d) for d in id_number]
