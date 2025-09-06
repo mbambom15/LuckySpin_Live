@@ -1,15 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup Successful</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #a0e9fd, #63c6f7);
+            color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            color: #0d6efd;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        p {
+            color: #333;
+            font-size: 1em;
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.3em;
+            }
+
+            p {
+                font-size: 0.95em;
+            }
+        }
+    </style>
+
     <script>
-        setTimeout(function(){
+        setTimeout(function() {
             window.location.href = "{{ url_for('login') }}";
         }, 2000); // redirect after 2 seconds
     </script>
 </head>
+
 <body>
-    <h2>Welcome {{ full_name }}! Your account has been created.</h2>
-    <p>Redirecting to login page...</p>
+    <div class="container">
+        <h2>Welcome {{ full_name }}! 🎉</h2>
+        <p>Your account has been successfully created.</p>
+        <p>Redirecting to login page...</p>
+    </div>
 </body>
+
 </html>

@@ -5,34 +5,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player History</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d0d0d;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h2 {
+            color: #facc15;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            border-collapse: collapse;
+            background-color: #1f1f1f;
+            border-radius: 12px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            font-size: 0.9em;
+        }
+
+        th {
+            background-color: #272727;
+            color: #facc15;
+        }
+
+        tr:nth-child(even) {
+            background-color: #1a1a1a;
+        }
+
+        .menu-button {
+            margin-top: 20px;
+            display: block;
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
+        }
+
+        .menu-button:hover {
+            background-color: #2563eb;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            th, td {
+                font-size: 0.8em;
+                padding: 6px;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <h2>Your Game History</h2>
-    <table border="1">
-        <tr>
-            <th>Played At</th>
-            <th>Wager</th>
-            <th>Chosen Numbers</th>
-            <th>Draw Numbers</th>
-            <th>Matched</th>
-            <th>Winnings</th>
-            <th>Outcome</th>
-        </tr>
-        {% for game in history %}
-        <tr>
-            <td>{{ game.played_at }}</td>
-            <td>R{{ game.wager_amount }}</td>
-            <td>{{ game.chosen_numbers }}</td>
-            <td>{{ game.draw_numbers }}</td>
-            <td>{{ game.matched_numbers }}</td>
-            <td>R{{ game.winnings }}</td>
-            <td>{{ game.outcome }}</td>
-        </tr>
-        {% endfor %}
+    <table>
+        <thead>
+            <tr>
+                <th>Played At</th>
+                <th>Wager</th>
+                <th>Chosen Numbers</th>
+                <th>Draw Numbers</th>
+                <th>Matched</th>
+                <th>Winnings</th>
+                <th>Outcome</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in history %}
+            <tr>
+                <td>{{ game.played_at }}</td>
+                <td>R{{ "%.2f"|format(game.wager_amount) }}</td>
+                <td>{{ game.chosen_numbers }}</td>
+                <td>{{ game.draw_numbers }}</td>
+                <td>{{ game.matched_numbers }}</td>
+                <td>R{{ "%.2f"|format(game.winnings) }}</td>
+                <td>{{ game.outcome }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
-    <br>
 
+    <!-- BACK TO MENU button -->
     <form action="{{ url_for('menu') }}" method="GET">
         <input type="submit" class="menu-button" value="BACK TO MENU">
     </form>

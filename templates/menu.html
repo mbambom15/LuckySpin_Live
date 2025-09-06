@@ -5,8 +5,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lucky Spin - Menu</title>
-    
-       
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background: #003366;
+            padding: 15px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+        }
+
+        h1 {
+            color: #003366;
+            margin-top: 20px;
+        }
+
+        h2 {
+            color: #3399ff;
+        }
+
+        h3 {
+            margin-top: 25px;
+            color: #003366;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+            margin: 20px auto;
+            max-width: 300px;
+        }
+
+        .options li {
+            margin: 15px 0;
+        }
+
+        .options a {
+            display: block;
+            padding: 12px;
+            background: #3399ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .options a:hover {
+            background: #007acc;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        input[type="submit"] {
+            padding: 12px 20px;
+            background-color: #ff4d4d;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #cc0000;
+        }
+
+        .flash {
+            margin: 15px auto;
+            max-width: 400px;
+            padding: 10px;
+            background: #ffe6e6;
+            border: 1px solid #ff4d4d;
+            border-radius: 6px;
+            color: #cc0000;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 30px;
+            background: #003366;
+            color: white;
+            padding: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .options a {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            /* pushes footer down */
+        }
+
+        footer {
+            background: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -18,35 +149,42 @@
         </nav>
     </header>
 
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="flash">
-        {% for msg in messages %}
-        <p>{{ msg }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
-    {% endwith %}
+    <main>
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash">
+            {% for msg in messages %}
+            <p>{{ msg }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
 
-    <h1>Welcome, {{ full_name }}</h1>
+        <h1>Welcome, {{ display_name }}</h1>
 
-    {% if balance > 0 %}
-    <h2>Your Balance: R {{ "%.2f"|format(balance) }}</h2>
-    {% else %}
-    <h2>You have no balance. <a href="{{ url_for('topup') }}">Top up now!</a></h2>
-    {% endif %}
 
-    <h3>Options available for you</h3>
-    <ul class="options">
-        <li><a href="{{ url_for('play') }}">🎮 Play Game</a></li>
-        <li><a href="{{ url_for('history') }}">📜 Game History</a></li>
-        <li><a href="{{ url_for('topup') }}">💳 Top Up</a></li>
-    </ul>
+        {% if balance > 0 %}
+        <h2>Your Balance: R {{ "%.2f"|format(balance) }}</h2>
+        {% else %}
+        <h2>You have no balance. <a href="{{ url_for('topup') }}">Top up now!</a></h2>
+        {% endif %}
 
-    <form action="{{ url_for('logout') }}" method="GET">
-        <input type="submit" value="🚪 Logout">
-    </form>
+        <h3>Options available for you</h3>
+        <ul class="options">
+            <li><a href="{{ url_for('play') }}">🎮 Play Game</a></li>
+            <li><a href="{{ url_for('history') }}">📜 Game History</a></li>
+            <li><a href="{{ url_for('topup') }}">💳 Top Up</a></li>
+        </ul>
+
+        <form action="{{ url_for('logout') }}" method="GET">
+            <input type="submit" value="🚪 Logout">
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 LuckySpin. All rights reserved.</p>
+    </footer>
 </body>
 
 </html>

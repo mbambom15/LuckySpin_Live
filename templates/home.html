@@ -4,41 +4,487 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Spin</title>
-</head>
-<header>
-    <section>
-        <nav>
-            <ul>
-                <li>LuckySpin</li>
-                <li><a href="/login"><button>Login</button></a></li>
-                <li><a href="/signup"><button>Sign Up</button></a></li>
-            </ul>
-        </nav>
-    </section>
+    <title>LuckySpin - Lottery & Betting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-</header>
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(to right, #4a6fc0, #6a8cd7);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            color: #ffc107;
+            margin-right: 10px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        nav ul li a:hover {
+            color: #ffc107;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 2px solid #ffc107;
+            color: #ffc107;
+        }
+
+        .btn-signup {
+            background: #ffc107;
+            color: #2c4b8a;
+        }
+
+        .btn-login:hover,
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: url('https://images.unsplash.com/photo-1519925610903-381054cc2a1c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(74, 111, 192, 0.8);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .jackpot {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px auto;
+            max-width: 600px;
+        }
+
+        .jackpot-amount {
+            font-size: 48px;
+            color: #ffc107;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        /* Promotions */
+        .promotions {
+            padding: 60px 0;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c4b8a;
+            font-size: 32px;
+        }
+
+        .promo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .promo-card {
+            background: linear-gradient(145deg, #4a6fc0, #6a8cd7);
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .promo-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .promo-content {
+            padding: 20px;
+        }
+
+        .promo-card h3 {
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        /* Current Draws */
+        .current-draws {
+            padding: 60px 0;
+            background: #f0f2f5;
+        }
+
+        .draw-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .draw-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .draw-header {
+            background: #4a6fc0;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .draw-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .draw-time {
+            font-size: 18px;
+            color: #e91e63;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+
+        .draw-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4a6fc0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Games Section */
+        .games {
+            padding: 60px 0;
+            background: white;
+        }
+
+        .game-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            height: 200px;
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .game-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .game-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(74, 111, 192, 0.8);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            background: #4a6fc0;
+            color: white;
+            padding: 50px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-column ul li a:hover {
+            color: #ffc107;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 20px;
+            transition: color 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: #ffc107;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #6a8cd7;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .responsible-gambling {
+            background: #3a5ba8;
+            padding: 15px;
+            text-align: center;
+            margin-top: 30px;
+            border-radius: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 5px 10px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .jackpot-amount {
+                font-size: 36px;
+            }
+        }
+
+        .btn-play {
+            background: #ffc107;
+            color: #2c4b8a;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
 
 <body>
-    <section>
-         <div class="container">
-            <h1>Welcome to <span class="highlight">Lucky Spin</span></h1>
-            <p></p>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="auth-buttons">
+                    <button class="btn btn-login"><a href="/login">Login</a></button>
+                    <button class="btn btn-signup"><a href="/signup">Sign Up</a></button>
+                </div>
+                <div class="logo">
+                    <i class="fas fa-dice"></i>
+                    LuckySpin
+                </div>
+            </div>
+        </div>
+    </header>
 
-            <form action="/login" method="GET">
-                <input type="submit" value="GET STARTED">
-            </form>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Spin & Win Big!</h1>
+                <p>Join thousands of players for a chance to win life-changing jackpots(No real money involved)</p>
+                <form action="/login" method="GET">
+                    <button type="submit" class="btn btn-play">GET STARTED</button>
+                </form>
+
+            </div>
         </div>
     </section>
 
+
+    <!-- Games Section -->
+    <section class="games">
+        <div class="container">
+            <h2 class="section-title">Popular Games</h2>
+            <div class="game-cards">
+                <div class="game-card">
+                    <img src="{{ url_for('static', filename='images/61ee77edd265300018045062.png') }}" alt="Lotto">
+                    <div class="game-overlay">Lotto simulation</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="responsible-gambling">
+                <p>Gamble Responsibly: Never chase your losses. Only gamble with money you can afford to lose.</p>
+                <p>Must be 18+ to play. begambleaware.org</p>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 LuckySpin. All rights reserved.</p>
+                <p><strong>Disclaimer:</strong> This is a demonstration website for educational or simulation purposes
+                    only.
+                    It is not affiliated with, endorsed by, or intended to replicate any official lottery or gambling
+                    platform.
+                    No real money is involved. Note that this is not a one-to-one simulation of the national lottery.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+
 </body>
-<footer>
-    <p>
-        <strong>Disclaimer:</strong> This is a demonstration website for educational or simulation purposes only.
-        It is not affiliated with, endorsed by, or intended to replicate any official lottery or gambling platform,
-        including Lottery SA.
-        No real money is involved. Note that this is not a one-to-one simulation of the national lottery. 
-    </p>
-</footer>
 
 </html>

@@ -4,47 +4,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login | LuckySpin</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #e6f2ff, #cce6ff);
+            color: #333;
+            text-align: center;
+        }
+
+        header {
+            background-color: #3399ff;
+            padding: 1.2rem;
+            color: white;
+        }
+
+        .brand {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        main {
+            flex: 1; /* pushes footer down */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #0066cc;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        input[type="submit"] {
+            background-color: #3399ff;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #267acc;
+        }
+
+        .flash-message {
+            background-color: #ffcccc;
+            color: #990000;
+            padding: 10px;
+            margin: 15px auto;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 6px;
+        }
+
+        footer {
+            background: #3399ff;
+            color: white;
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        footer a button {
+            background-color: white;
+            color: #3399ff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        footer a button:hover {
+            background-color: #e6f2ff;
+        }
+
+        @media (max-width: 600px) {
+            .brand {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
 </head>
-<header>
-    <section>
-        <nav>
-            <ul>
-                <li>LuckySpin</li>
-                <li><a href="/forgot_password"><button>Forgot Password: </button></a></li>
-            </ul>
-        </nav>
-        <h4>Login</h4>
-    </section>
-</header>
 
 <body>
+    <header>
+        <div class="brand">🎰 LuckySpin</div>
+    </header>
 
-    <h1>Welcome to LuckySpin: </h1>
+    <main>
+        <h1>Welcome to LuckySpin</h1>
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="flash-message">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-    <form action="/login_customer" method="POST">
-        <label>Email: </label>
-        <input type="email" name="email" required="">
+        <form action="/login_customer" method="POST">
+            <label>Email: </label>
+            <input type="email" name="email" required>
 
-        <label>Password: </label>
-        <input type="password" name="pswd1" required="">
+            <label>Password: </label>
+            <input type="password" name="pswd1" required>
 
-        <input type="submit" value="Login" />
-    </form>
+            <input type="submit" value="Login">
+        </form>
 
+        <p>No account? Sign up below.</p>
+        <form action="/signup" method="GET">
+            <input type="submit" value="Sign-UP">
+        </form>
+    </main>
 
-    <p>No account? Sign up below.</p>
-    <form action="/signup" method="POST">
-        <input type="submit" value="Sign-UP" />
-    </form>
+    <footer>
+        <a href="/forgot_password"><button>Forgot Password</button></a>
+    </footer>
 </body>
 
 </html>

@@ -83,7 +83,7 @@
 </head>
 
 <body>
-    <h1>🎰 Welcome {{ full_name }}, your balance is R{{ "%.2f"|format(balance) }}</h1>
+    <h1>🎰 Welcome {{ display_name }}, your balance is R{{ "%.2f"|format(balance) }}</h1>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
