@@ -5,10 +5,10 @@ import random
 
 
 connection = mysql.connector.connect(
-    host = 'localhost',
-    database = 'LuckySpin',
-    username = 'root',
-    password = 'Mbambo1307#a'
+    host = 'luckyspin-1.czg4wmsiihb0.eu-west-3.rds.amazonaws.com',
+    database = 'luckyspin',
+    username = 'bambi15',
+    password = 'Bambi7708#a'
 )
 #
 cursor = connection.cursor()
@@ -144,21 +144,21 @@ def play():
 
         try:
             cursor = connection.cursor()
-            cursor.execute("INSERT INTO LottoDraw (draw_date, total_pool) VALUES (NOW(), %s)", (bet_amount,))
+            cursor.execute("INSERT INTO lottodraw (draw_date, total_pool) VALUES (NOW(), %s)", (bet_amount,))
             draw_id = cursor.lastrowid
 
             for num in drawn_numbers:
-                cursor.execute("INSERT INTO LottoDraw_Numbers (draw_id, number) VALUES (%s, %s)", (draw_id, num))
+                cursor.execute("INSERT INTO lottodraw_numbers (draw_id, number) VALUES (%s, %s)", (draw_id, num))
 
             cursor.execute("""
-                INSERT INTO Game (played_at, wager_amount, matched_numbers, winnings,
+                INSERT INTO game (played_at, wager_amount, matched_numbers, winnings,
                                   player_id, outcome, draw_id)
                 VALUES (NOW(), %s, %s, %s, %s, %s, %s)
             """, (bet_amount, match_count, winnings, session['user_id'], outcome, draw_id))
             game_id = cursor.lastrowid
 
             for num in user_numbers:
-                cursor.execute("INSERT INTO Game_ChosenNumbers (game_id, number) VALUES (%s, %s)", (game_id, num))
+                cursor.execute("INSERT INTO game_chosennumbers (game_id, number) VALUES (%s, %s)", (game_id, num))
 
             cursor.execute("UPDATE participant SET balance=%s WHERE id=%s", (new_balance, session['user_id']))
             connection.commit()
@@ -192,7 +192,7 @@ def history():
     user_id = session['user_id']
     #query
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM PlayerGameHistory WHERE player_id = %s ORDER BY played_at DESC", (user_id, ))
+    cursor.execute("SELECT * FROM playergamehistory WHERE player_id = %s ORDER BY played_at DESC", (user_id, ))
     history_data = cursor.fetchall()
     cursor.close()
     return render_template("history.html", history = history_data)
