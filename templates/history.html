@@ -10,7 +10,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0d0d0d;
             color: #f2f2f2;
-            text-align: center;
             padding: 20px;
             margin: 0;
         }
@@ -18,41 +17,135 @@
         h2 {
             color: #facc15;
             margin-bottom: 20px;
+            text-align: center;
         }
 
-        table {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto 30px auto;
-            border-collapse: collapse;
+        .history-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .record-card {
             background-color: #1f1f1f;
             border-radius: 12px;
-            overflow: hidden;
-            box-sizing: border-box;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #facc15;
         }
 
-        th, td {
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid #333;
+        .record-card.balance {
+            border-left-color: #3b82f6;
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .record-type {
+            background-color: #facc15;
+            color: #0d0d0d;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
             font-size: 0.9em;
         }
 
-        th {
-            background-color: #272727;
-            color: #facc15;
+        .record-type.balance {
+            background-color: #3b82f6;
+            color: white;
         }
 
-        tr:nth-child(even) {
-            background-color: #1a1a1a;
+        .record-time {
+            color: #9ca3af;
+            font-size: 0.9em;
+        }
+
+        .record-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            background-color: #272727;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            color: #9ca3af;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #f2f2f2;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .detail-value.win {
+            color: #10b981;
+        }
+
+        .detail-value.loss {
+            color: #ef4444;
+        }
+
+        .detail-value.partial {
+            color: #f59e0b;
+        }
+
+        .numbers-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #272727;
+            border-radius: 8px;
+        }
+
+        .numbers-title {
+            color: #facc15;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .numbers-display {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .number-ball {
+            background-color: #3b82f6;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .number-ball.draw {
+            background-color: #facc15;
+            color: #0d0d0d;
         }
 
         .menu-button {
-            margin-top: 20px;
+            margin-top: 30px;
             display: block;
             background-color: #3b82f6;
             color: white;
-            padding: 10px 20px;
+            padding: 15px 20px;
             border: none;
             border-radius: 8px;
             font-size: 1em;
@@ -70,53 +163,138 @@
             background-color: #2563eb;
         }
 
+        .no-history {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px;
+            font-size: 1.1em;
+        }
+
         /* Mobile responsiveness */
-        @media (max-width: 600px) {
-            th, td {
-                font-size: 0.8em;
-                padding: 6px;
+        @media (max-width: 768px) {
+            .record-details {
+                grid-template-columns: 1fr;
             }
 
-            table {
-                font-size: 0.85em;
+            .record-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .number-ball {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9em;
             }
         }
     </style>
 </head>
 
 <body>
-    <h2>Your Game History</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Played At</th>
-                <th>Wager</th>
-                <th>Chosen Numbers</th>
-                <th>Draw Numbers</th>
-                <th>Matched</th>
-                <th>Winnings</th>
-                <th>Outcome</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for game in history %}
-            <tr>
-                <td>{{ game.played_at }}</td>
-                <td>R{{ "%.2f"|format(game.wager_amount) }}</td>
-                <td>{{ game.chosen_numbers }}</td>
-                <td>{{ game.draw_numbers }}</td>
-                <td>{{ game.matched_numbers }}</td>
-                <td>R{{ "%.2f"|format(game.winnings) }}</td>
-                <td>{{ game.outcome }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="history-container">
+        <h2>🎰 Your Game History</h2>
 
-    <!-- BACK TO MENU button -->
-    <form action="{{ url_for('menu') }}" method="GET">
-        <input type="submit" class="menu-button" value="BACK TO MENU">
-    </form>
+        {% if history %}
+            {% for record in history %}
+            <div class="record-card {% if record.record_type == 'BALANCE' %}balance{% endif %}">
+                
+                <!-- Header -->
+                <div class="record-header">
+                    <span class="record-type {% if record.record_type == 'BALANCE' %}balance{% endif %}">
+                        {{ record.record_type }}
+                    </span>
+                    <span class="record-time">{{ record.activity_time }}</span>
+                </div>
+
+                <!-- Game Records -->
+                {% if record.record_type == 'GAME' %}
+                    <div class="record-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Wager Amount</div>
+                            <div class="detail-value">R{{ "%.2f"|format(record.wager_amount or 0) }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Matched Numbers</div>
+                            <div class="detail-value">{{ record.matched_numbers or 0 }}/6</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Winnings</div>
+                            <div class="detail-value {% if record.winnings > 0 %}win{% endif %}">
+                                R{{ "%.2f"|format(record.winnings or 0) }}
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Outcome</div>
+                            <div class="detail-value {% if record.outcome == 'WIN' %}win{% elif record.outcome == 'LOSS' %}loss{% else %}partial{% endif %}">
+                                {{ record.outcome }}
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Current Balance</div>
+                            <div class="detail-value">R{{ "%.2f"|format(record.current_balance or 0) }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Numbers Section -->
+                    {% if record.chosen_numbers or record.draw_numbers %}
+                    <div class="numbers-section">
+                        {% if record.chosen_numbers %}
+                        <div class="numbers-title">Your Numbers:</div>
+                        <div class="numbers-display">
+                            {% for num in record.chosen_numbers.split(', ') %}
+                            <div class="number-ball">{{ num }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if record.draw_numbers %}
+                        <div class="numbers-title">Draw Numbers:</div>
+                        <div class="numbers-display">
+                            {% for num in record.draw_numbers.split(', ') %}
+                            <div class="number-ball draw">{{ num }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                <!-- Balance Records -->
+                {% else %}
+                    <div class="record-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Transaction Type</div>
+                            <div class="detail-value">{{ record.change_type }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Amount</div>
+                            <div class="detail-value {% if record.change_type in ['WIN', 'TOPUP'] %}win{% elif record.change_type in ['BET', 'LOSS'] %}loss{% endif %}">
+                                R{{ "%.2f"|format(record.amount_change or 0) }}
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Balance Before</div>
+                            <div class="detail-value">R{{ "%.2f"|format(record.balance_before or 0) }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Balance After</div>
+                            <div class="detail-value">R{{ "%.2f"|format(record.balance_after or 0) }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-history">
+                <p>No game history found. Start playing to see your records here!</p>
+            </div>
+        {% endif %}
+
+        <!-- BACK TO MENU button -->
+        <form action="{{ url_for('menu') }}" method="GET" style="text-align: center;">
+            <input type="submit" class="menu-button" value="BACK TO MENU">
+        </form>
+    </div>
 </body>
 
 </html>

@@ -14,7 +14,7 @@ connection = mysql.connector.connect(
 #
 cursor = connection.cursor()
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')
+app.secret_key = "secertfilename"
 def luhn_check(id_number):
     """Perform Luhn check on SA ID"""
     digits = [int(d) for d in id_number]
@@ -136,9 +136,20 @@ def play():
 
         outcome, winnings = "LOSS", 0
         if match_count == 6:
-            outcome, winnings = "WIN", bet_amount * 100
+            outcome, winnings = "WIN", bet_amount * 1000
+            
+        elif match_count == 2:
+            outcome, winnings = "PARTIAL", bet_amount * 2
+            
         elif match_count == 3:
-            outcome, winnings = "PARTIAL", bet_amount * 50
+            outcome, winnings = "PARTIAL", bet_amount * 5
+            
+        elif match_count == 4:
+            outcome, winnings = "PARTIAL", bet_amount * 25
+        
+        elif match_count == 5:
+            outcome, winnings = "PARTIAL", bet_amount * 80
+        
 
         new_balance = session['balance'] - bet_amount + winnings
         session['balance'] = new_balance
@@ -161,7 +172,16 @@ def play():
             for num in user_numbers:
                 cursor.execute("INSERT INTO game_chosennumbers (game_id, number) VALUES (%s, %s)", (game_id, num))
 
-            cursor.execute("UPDATE participant SET balance=%s WHERE id=%s", (new_balance, session['user_id']))
+            cursor.execute(" UPDATE participant SET balance=%s WHERE id=%s", (new_balance, session['user_id']))
+            connection.commit()
+            
+            cursor.execute(""" INSERT INTO balancehistory (player_id, change_type, amount, old_balance, new_balance) VALUES (%s, 'BET', %s, %s, %s) """, (session['user_id'], bet_amount, session['balance'] + bet_amount - winnings, new_balance))
+            
+            if winnings > 0:
+                cursor.execute(""" INSERT INTO balancehistory (player_id, change_type, amount, old_balance, new_balance) VALUES (%s, 'WIN', %s, %s, %s) """, (session['user_id'], winnings, new_balance - winnings, new_balance))
+            else:
+                cursor.execute(""" INSERT INTO balancehistory (player_id, change_type, amount, old_balance, new_balance) VALUES (%s, 'LOSS', %s, %s, %s) """, (session['user_id'], 0, session['balance'] + bet_amount - winnings, new_balance))
+            
             connection.commit()
 
         except mysql.connector.Error as err:
@@ -193,7 +213,7 @@ def history():
     user_id = session['user_id']
     #query
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM playergamehistory WHERE player_id = %s ORDER BY played_at DESC", (user_id, ))
+    cursor.execute("SELECT * FROM playerfullhistory WHERE player_id = %s ORDER BY activity_time  DESC", (user_id, ))
     history_data = cursor.fetchall()
     cursor.close()
     return render_template("history.html", history = history_data)
@@ -223,6 +243,12 @@ def topup():
             connection.commit()
             cursor.close()
             session['balance'] = session['balance'] + amount
+            
+            cursor = connection.cursor()
+            
+            cursor.execute(""" INSERT INTO balancehistory (player_id, change_type, amount, old_balance, new_balance) VALUES (%s, 'TOPUP', %s, %s, %s) """, (user_id, amount, session['balance'] - amount, session['balance']))
+            connection.commit()
+            cursor.close()
 
             flash(f"Successfully topped up R{amount:.2f}. New balance: R{session['balance']:.2f}")
             return redirect(url_for('menu'))
